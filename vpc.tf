@@ -18,6 +18,7 @@ resource "aws_subnet" "public_a" {
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
   availability_zone       = var.az_b
+  depends_on              = [aws_vpc.devops_project]
 
   tags = {
     Name = "public_a"
@@ -29,6 +30,7 @@ resource "aws_subnet" "public_b" {
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = true
   availability_zone       = var.az_c
+  depends_on              = [aws_vpc.devops_project]
 
   tags = {
     Name = "public_b"
@@ -39,6 +41,7 @@ resource "aws_subnet" "private_a" {
   vpc_id            = aws_vpc.devops_project.id
   cidr_block        = "10.0.3.0/24"
   availability_zone = var.az_c
+  depends_on        = [aws_vpc.devops_project]
 
   tags = {
     Name = "private_a"
@@ -49,6 +52,7 @@ resource "aws_subnet" "private_b" {
   vpc_id            = aws_vpc.devops_project.id
   cidr_block        = "10.0.4.0/24"
   availability_zone = var.az_b
+  depends_on        = [aws_vpc.devops_project]
 
   tags = {
     Name = "private_b"
@@ -99,6 +103,7 @@ resource "aws_route_table" "devops_public" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
+  depends_on = [aws_internet_gateway.igw]
 
   tags = {
     Name = "public_rt"
@@ -117,6 +122,7 @@ resource "aws_route_table" "devops_private" {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_nat_gateway.natgw.id
   }
+  depends_on = [aws_nat_gateway.natgw]
 
   tags = {
     Name = "private_rt"
@@ -188,13 +194,13 @@ resource "aws_lb_target_group" "alb-web" {
 resource "aws_lb_target_group_attachment" "web_server_1" {
   target_group_arn = aws_lb_target_group.alb-web.arn
   target_id        = aws_instance.web_server.id
-  port             = 80
+  port             = 5000
 }
 
 resource "aws_lb_target_group_attachment" "web_server_2" {
   target_group_arn = aws_lb_target_group.alb-web.arn
   target_id        = aws_instance.web_server_2.id
-  port             = 80
+  port             = 5000
 }
 
 

@@ -7,17 +7,23 @@ resource "aws_instance" "web_server" {
   key_name        = "dev_terraform"
   user_data       = <<EOF
 #!/bin/bash
+cd /home/ubuntu
 sudo apt update -y
-sudo apt install apache2 -y
-echo "Hello World from Terraform. Web server 1" > /var/www/html/index.html
-sudo systemctl stop apache2
-sudo systemctl start apache2
+sudo apt install python3 python3-full python3-flask -y
+git clone https://github.com/gmigues/time-app.git
+cd time-app
+python3 app.py
 EOF
 
   tags = {
     Name = "web-server_1"
   }
+  depends_on = [aws_lb.web_lb]
 }
+
+
+
+
 
 
 
@@ -29,14 +35,16 @@ resource "aws_instance" "web_server_2" {
   key_name        = "dev_terraform"
   user_data       = <<EOF
 #!/bin/bash
+cd /home/ubuntu
 sudo apt update -y
-sudo apt install apache2 -y
-echo "Hello World from Terraform. Web server 2" > /var/www/html/index.html
-sudo systemctl stop apache2
-sudo systemctl start apache2
+sudo apt install python3 python3-full python3-flask -y
+git clone https://github.com/gmigues/time-app.git
+cd time-app
+python3 app.py
 EOF
 
   tags = {
     Name = "web-server_2"
   }
+  depends_on = [aws_lb.web_lb]
 }
