@@ -45,6 +45,15 @@ resource "aws_security_group_rule" "web_ingress" {
   security_group_id        = aws_security_group.web_sg.id
 }
 
+resource "aws_security_group_rule" "web_ssh_ingress" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.web_sg.id
+}
+
 resource "aws_security_group_rule" "web_egress" {
   type              = "egress"
   from_port         = 0
@@ -52,4 +61,31 @@ resource "aws_security_group_rule" "web_egress" {
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.web_sg.id
+}
+
+
+### Bastion SG ###
+
+resource "aws_security_group" "bastion_sg" {
+  name   = "bastion-sg"
+  vpc_id = aws_vpc.devops_project.id
+
+}
+
+resource "aws_security_group_rule" "bastion_ingress" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.bastion_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.bastion_sg.id
 }

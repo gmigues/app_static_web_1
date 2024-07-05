@@ -23,6 +23,21 @@ EOF
 
 
 
+resource "aws_instance" "bastion" {
+  ami             = "ami-0ff591da048329e00"
+  instance_type   = "t2.micro"
+  subnet_id       = aws_subnet.public_a.id
+  security_groups = [aws_security_group.bastion_sg.id]
+  key_name        = "dev_terraform"
+
+
+  tags = {
+    Name = "bastion"
+  }
+  depends_on = [aws_lb.web_lb]
+}
+
+
 
 
 
