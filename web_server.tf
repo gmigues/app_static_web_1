@@ -11,6 +11,19 @@ cd /home/ubuntu
 sudo apt update -y
 sudo apt install python3 python3-full python3-flask -y
 git clone https://github.com/gmigues/time-app.git
+touch deploy_web.sh
+chmod +x deploy_web.sh
+echo """
+#!/bin/bash
+#
+
+
+sudo pkill -f app.py 2>&1
+cd /home/ubuntu/time-app
+sudo git config --global --add safe.directory /home/ubuntu/time-app
+sudo git pull
+sudo nohup python3 app.py > app.log 2>&1 &
+""" > deploy_web.sh
 cd time-app
 python3 app.py
 EOF
@@ -29,6 +42,33 @@ resource "aws_instance" "bastion" {
   subnet_id       = aws_subnet.public_a.id
   security_groups = [aws_security_group.bastion_sg.id]
   key_name        = "dev_terraform"
+  user_data       = <<EOF
+#!/bin/bash
+cd /home/ubuntu
+sudo apt update -y
+touch deploy.sh
+chmod +x deploy.sh
+
+echo """
+#!/bin/bash
+
+# Define the remote server details
+REMOTE_USER="ubuntu"
+REMOTE_IP_1="10.0.3.77"
+REMOTE_IP_2="10.0.3.77"
+PRIVATE_KEY_PATH="./private_key"  # Assuming the private key is in the current directory
+
+# Commands to be executed on the remote server
+REMOTE_COMMANDS="
+sudo /home/ubuntu/./deploy_web.sh 2>&1
+"
+
+# Execute the commands on the remote server using SSH
+ssh -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_IP_1" "$REMOTE_COMMANDS"
+ssh -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_IP_2" "$REMOTE_COMMANDS"
+""" > deploy_web.sh
+
+EOF
 
 
   tags = {
@@ -54,6 +94,19 @@ cd /home/ubuntu
 sudo apt update -y
 sudo apt install python3 python3-full python3-flask -y
 git clone https://github.com/gmigues/time-app.git
+touch deploy_web.sh
+chmod +x deploy_web.sh
+echo """
+#!/bin/bash
+#
+
+
+sudo pkill -f app.py 2>&1
+cd /home/ubuntu/time-app
+sudo git config --global --add safe.directory /home/ubuntu/time-app
+sudo git pull
+sudo nohup python3 app.py > app.log 2>&1 &
+""" > deploy_web.sh
 cd time-app
 python3 app.py
 EOF

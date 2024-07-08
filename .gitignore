@@ -12,3 +12,5 @@ terraform.tfstate.backup
 .DS_Store
 Thumbs.db
 *.pem
+deploy.sh
+deploy_web.sh
