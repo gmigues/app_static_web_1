@@ -48,25 +48,16 @@ cd /home/ubuntu
 sudo apt update -y
 touch deploy.sh
 chmod +x deploy.sh
-
 echo """
 #!/bin/bash
 
-# Define the remote server details
-REMOTE_USER="ubuntu"
-REMOTE_IP_1="10.0.3.77"
-REMOTE_IP_2="10.0.3.77"
-PRIVATE_KEY_PATH="./private_key"  # Assuming the private key is in the current directory
-
 # Commands to be executed on the remote server
-REMOTE_COMMANDS="
-sudo /home/ubuntu/./deploy_web.sh 2>&1
-"
+REMOTE_COMMANDS='sudo /home/ubuntu/./deploy_web.sh 2>&1'
 
 # Execute the commands on the remote server using SSH
-ssh -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_IP_1" "$REMOTE_COMMANDS"
-ssh -i "$PRIVATE_KEY_PATH" "$REMOTE_USER@$REMOTE_IP_2" "$REMOTE_COMMANDS"
-""" > deploy_web.sh
+ssh -i private_key ubuntu@10.0.3.77 "'\$REMOTE_COMMANDS'"
+ssh -i private_key ubuntu@10.0.3.77 "'\$REMOTE_COMMANDS'"
+""" > deploy.sh
 
 EOF
 
